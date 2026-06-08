@@ -30,7 +30,14 @@ COPY --chown=user:user requirements.txt .
 
 # Install dependencies as the non-root user
 USER user
-RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Limit compilation to 1 CPU core and disable GUI support to prevent Hugging Face builder RAM exhaustion (OOM)
+ENV MAKEFLAGS="-j1"
+
+RUN pip install --no-cache-dir --user cmake && \
+    pip install --no-cache-dir --user dlib==19.24.4 --config-settings="cmake.define.DLIB_NO_GUI_SUPPORT=ON" && \
+    pip install --no-cache-dir --user face-recognition==1.3.0 && \
+    pip install --no-cache-dir --user -r requirements.txt
 
 # Copy the rest of the application files with proper ownership
 COPY --chown=user:user . .
