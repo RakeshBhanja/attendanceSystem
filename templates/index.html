@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance System</title>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(31, 40, 51, 0.45);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #45f3ff;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --text-main: #f5f6fa;
+            --text-muted: #a4b0be;
+            --glass-glow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #090a0f 0%, #151821 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Container & Layout */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Header design */
+        header {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: var(--glass-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            border-radius: 2px;
+        }
+
+        header h1 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: 1.5px;
+            background: linear-gradient(45deg, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Grid section */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 900px) {
+            .main-grid {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* Card panels */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: var(--glass-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .card:hover {
+            border-color: rgba(69, 243, 255, 0.25);
+            box-shadow: 0 12px 40px 0 rgba(69, 243, 255, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Forms and Buttons */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+            padding: 0.6rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1f4068, #162447);
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #162447, #1f4068);
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(69, 243, 255, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #45f3ff, #00b8d4);
+            color: #0b0c10;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #00b8d4, #45f3ff);
+            box-shadow: 0 4px 15px rgba(69, 243, 255, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: none;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 4px 15px rgba(231, 76, 96, 0.4);
+        }
+
+        /* Camera Dashboard */
+        .camera-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .viewscreen-container {
+            width: 100%;
+            position: relative;
+            background: #000;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            max-height: 480px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #output-view {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            color: var(--text-muted);
+            font-size: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .pulse-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(69, 243, 255, 0.1);
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-ring 2s infinite;
+        }
+
+        /* Scanning HUD laser effect */
+        .scan-line {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 10px var(--primary);
+            animation: scanning 2s linear infinite;
+            z-index: 10;
+        }
+
+        /* Control Tray */
+        .controls-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Tables & Lists */
+        .log-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .student-list-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .student-table th {
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .student-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            font-size: 0.95rem;
+        }
+
+        .student-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .badge-present {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--success);
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-online {
+            color: var(--success);
+            border-color: rgba(46, 204, 113, 0.2);
+        }
+        
+        .status-offline {
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(69, 243, 255, 0.4); }
+            70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(69, 243, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(69, 243, 255, 0); }
+        }
+
+        @keyframes scanning {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Hidden standard elements */
+        #hidden-video {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 id="main-heading">FACIAL ATTENDANCE PORTAL</h1>
+        <p id="sub-heading">Hugging Face Deployment Cloud Console</p>
+    </header>
+
+    <div class="main-grid">
+        <!-- Sidebar: Uploads & Database Registration -->
+        <div class="card">
+            <h2>DATABASE SETUP</h2>
+            
+            <!-- Excel spreadsheet state -->
+            <div class="form-group">
+                <label>Attendance Excel sheet</label>
+                <div class="status-banner" id="excel-status-banner">
+                    <span id="excel-status-text">❌ Excel File Not Loaded</span>
+                </div>
+                <form id="excel-upload-form" style="display:flex; flex-direction:column; gap:0.6rem;">
+                    <input type="file" id="excel-file-input" name="file" accept=".xlsx" required>
+                    <button type="submit" class="btn" id="excel-submit-btn">Upload Excel</button>
+                </form>
+            </div>
+
+            <!-- Face registrations -->
+            <div class="form-group" style="margin-top:1rem;">
+                <label>Add New Student Face</label>
+                <form id="face-register-form" style="display:flex; flex-direction:column; gap:0.6rem;">
+                    <input type="text" id="roll-number-input" placeholder="Enter Roll Number (e.g. 101)" required>
+                    <input type="file" id="face-file-input" accept="image/*" required>
+                    <button type="submit" class="btn btn-primary" id="register-submit-btn">Register Student</button>
+                </form>
+            </div>
+
+            <!-- Database summary -->
+            <div class="form-group" style="margin-top:1rem;">
+                <label>System Summary</label>
+                <div style="font-size:0.9rem; display:flex; flex-direction:column; gap:0.4rem; padding:0.5rem; background:rgba(0,0,0,0.2); border-radius:10px;">
+                    <div>Registered Faces: <strong id="summary-registered-faces">0</strong></div>
+                    <div>Session Status: <strong id="summary-session-state">Inactive</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Workspace: Camera Viewer and Live Logs -->
+        <div class="card" style="gap:2rem;">
+            <h2>LIVE SCANNING CONSOLE</h2>
+            
+            <div class="camera-panel">
+                <div class="viewscreen-container" id="video-container">
+                    <div class="scan-line" id="scanner-laser"></div>
+                    <img id="output-view" style="display:none;" alt="Live processing view">
+                    
+                    <div class="camera-placeholder" id="placeholder-box">
+                        <div class="pulse-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        </div>
+                        <p>Camera feed is inactive.<br>Click "Start Scanning" to initialize your webcam.</p>
+                    </div>
+                </div>
+                
+                <!-- Controls Row -->
+                <div class="controls-row">
+                    <button class="btn btn-success" id="btn-start-stream">Start Scanning</button>
+                    <button class="btn btn-danger" id="btn-stop-attendance" disabled>Stop & Save Attendance</button>
+                    <a id="download-link" href="#" style="display:none; text-decoration:none; flex-grow:1;">
+                        <button class="btn btn-primary" style="width:100%;">Download Report</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Logs Section -->
+            <div class="log-section">
+                <label>Detected Present Students</label>
+                <div class="student-list-container">
+                    <table class="student-table" id="students-table">
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Status</th>
+                                <th>Time Spotted</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-table-body">
+                            <tr>
+                                <td colspan="3" style="text-align:center; color:var(--text-muted); padding:2rem;">No students detected yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Browser standard hidden video and canvas elements -->
+<video id="hidden-video" width="640" height="480" autoplay playsinline muted></video>
+<canvas id="frame-canvas" width="640" height="480" style="display:none;"></canvas>
+
+<script>
+    // Elements references
+    const video = document.getElementById('hidden-video');
+    const canvas = document.getElementById('frame-canvas');
+    const ctx = canvas.getContext('2d');
+    const outputView = document.getElementById('output-view');
+    const placeholderBox = document.getElementById('placeholder-box');
+    const laser = document.getElementById('scanner-laser');
+    
+    // Control Buttons
+    const btnStart = document.getElementById('btn-start-stream');
+    const btnStop = document.getElementById('btn-stop-attendance');
+    const downloadLink = document.getElementById('download-link');
+    
+    // Forms
+    const excelForm = document.getElementById('excel-upload-form');
+    const faceForm = document.getElementById('face-register-form');
+    
+    // Status metrics
+    const excelStatusBanner = document.getElementById('excel-status-banner');
+    const excelStatusText = document.getElementById('excel-status-text');
+    const registeredCountText = document.getElementById('summary-registered-faces');
+    const sessionStateText = document.getElementById('summary-session-state');
+    const tableBody = document.getElementById('student-table-body');
+    
+    // Application States
+    let streamActive = false;
+    let streamInstance = null;
+    let scanInterval = null;
+    let presentStudents = new Set();
+    const spottedTimes = {}; // Stores first seen timestamps for UI log
+
+    // Fetch initial status on load
+    window.addEventListener('DOMContentLoaded', fetchSystemStatus);
+
+    function fetchSystemStatus() {
+        fetch('/api/status')
+            .then(res => res.json())
+            .then(data => {
+                if (data.excel_loaded) {
+                    excelStatusBanner.className = "status-banner status-online";
+                    excelStatusText.innerText = `✔ Loaded: ${data.excel_filename}`;
+                } else {
+                    excelStatusBanner.className = "status-banner";
+                    excelStatusText.innerText = "❌ Excel File Not Loaded";
+                }
+                registeredCountText.innerText = data.registered_students_count;
+            })
+            .catch(err => console.error("Error fetching status:", err));
+    }
+
+    // Excel Upload Handler
+    excelForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        fetch('/upload_excel', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                fetchSystemStatus();
+            }
+        })
+        .catch(err => alert("Error uploading file: " + err));
+    });
+
+    // Face Registration Handler
+    faceForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('roll_number', document.getElementById('roll-number-input').value);
+        formData.append('file', document.getElementById('face-file-input').files[0]);
+
+        fetch('/register_face', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                faceForm.reset();
+                fetchSystemStatus();
+            }
+        })
+        .catch(err => alert("Error registering student: " + err));
+    });
+
+    // Camera control handlers
+    btnStart.addEventListener('click', toggleStream);
+    btnStop.addEventListener('click', stopAndSaveAttendance);
+
+    function toggleStream() {
+        if (!streamActive) {
+            // Start streaming
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: 640, 
+                    height: 480,
+                    facingMode: "user"
+                } 
+            })
+            .then(stream => {
+                streamInstance = stream;
+                video.srcObject = stream;
+                
+                // Hide placeholder, show output display and HUD laser
+                placeholderBox.style.display = 'none';
+                outputView.style.display = 'block';
+                laser.style.display = 'block';
+                
+                // Start backend API session
+                fetch('/start_attendance', { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Attendance started:", data.message);
+                        presentStudents.clear();
+                        sessionStateText.innerText = "Scanning Active";
+                        sessionStateText.style.color = "var(--success)";
+                        
+                        // Enable Stop button, change Start to Pause label
+                        btnStop.disabled = false;
+                        btnStart.innerText = "Pause Camera";
+                        btnStart.className = "btn";
+                        downloadLink.style.display = 'none';
+                        
+                        streamActive = true;
+                        
+                        // Begin frame posting loop at ~8 FPS (120ms interval) to optimize CPU usage
+                        scanInterval = setInterval(captureAndProcessFrame, 120);
+                    });
+            })
+            .catch(err => {
+                alert("Camera Access Error: " + err.message);
+                console.error("Camera error:", err);
+            });
+        } else {
+            // Pause/Stop Camera streams without saving
+            stopCameraStreams();
+            btnStart.innerText = "Resume Scanning";
+            btnStart.className = "btn btn-success";
+            sessionStateText.innerText = "Paused";
+            sessionStateText.style.color = "var(--primary)";
+        }
+    }
+
+    function stopCameraStreams() {
+        clearInterval(scanInterval);
+        if (streamInstance) {
+            streamInstance.getTracks().forEach(track => track.stop());
+        }
+        video.srcObject = null;
+        laser.style.display = 'none';
+        streamActive = false;
+    }
+
+    function captureAndProcessFrame() {
+        if (!streamActive) return;
+        
+        // Draw hidden video onto hidden canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Export canvas as medium quality base64 JPEG to minimize payload size
+        const frameData = canvas.toDataURL('image/jpeg', 0.7);
+        
+        fetch('/process_frame', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: frameData })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                console.error("Server processing error:", data.error);
+                return;
+            }
+            
+            // Set output image frame
+            outputView.src = data.image;
+            
+            // Update live table logs
+            updateAttendanceTable(data.present_rolls);
+        })
+        .catch(err => console.error("Communication error:", err));
+    }
+
+    function updateAttendanceTable(presentRolls) {
+        if (!presentRolls || presentRolls.length === 0) return;
+        
+        let newDetection = false;
+        
+        presentRolls.forEach(roll => {
+            if (!presentStudents.has(roll)) {
+                presentStudents.add(roll);
+                spottedTimes[roll] = new Date().toLocaleTimeString();
+                newDetection = true;
+            }
+        });
+
+        if (newDetection) {
+            // Re-render table rows
+            tableBody.innerHTML = '';
+            
+            Array.from(presentStudents).reverse().forEach(roll => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${roll}</strong></td>
+                    <td><span class="badge-present">PRESENT</span></td>
+                    <td>${spottedTimes[roll]}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+    }
+
+    function stopAndSaveAttendance() {
+        // Stop scanning interval and cameras
+        stopCameraStreams();
+        
+        // Post save request to server
+        fetch('/stop_attendance', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    // Show download report button
+                    downloadLink.href = data.download_url;
+                    downloadLink.style.display = 'block';
+                    
+                    // Reset UI
+                    btnStart.innerText = "Start Scanning";
+                    btnStart.className = "btn btn-success";
+                    btnStop.disabled = true;
+                    sessionStateText.innerText = "Finished & Saved";
+                    sessionStateText.style.color = "var(--success)";
+                    
+                    placeholderBox.style.display = 'flex';
+                    outputView.style.display = 'none';
+                    fetchSystemStatus();
+                } else {
+                    sessionStateText.innerText = "Idle";
+                    sessionStateText.style.color = "var(--text-muted)";
+                    placeholderBox.style.display = 'flex';
+                    outputView.style.display = 'none';
+                }
+            })
+            .catch(err => {
+                alert("Error saving attendance: " + err);
+                fetchSystemStatus();
+            });
+    }
+</script>
+</body>
+</html>
