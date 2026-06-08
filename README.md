@@ -1,3 +1,12 @@
+---
+title: Facial Attendance System
+emoji: 👤
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # Face Recognition Attendance System (Hugging Face Spaces Deployment)
 
 This repository is optimized for deployment to **Hugging Face Spaces** using the **Docker SDK**. It features a modern, responsive, dark-themed glassmorphic web dashboard that captures webcam feeds from the browser and runs real-time student face recognition at the backend.
